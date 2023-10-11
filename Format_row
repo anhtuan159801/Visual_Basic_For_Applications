@@ -1,0 +1,21 @@
+Sub Format_row()
+    Dim ws As Worksheet
+    Dim wb As Workbook
+    Set wb = ThisWorkbook     
+    Dim colWidths As Variant
+    Dim inputValues As String
+    inputValues = InputBox("Nhap do rong cac cot, phan tach gia tri cac cot bang dau phay:")
+    
+    
+    colWidths = Split(inputValues, ",")
+    
+    Dim col As Integer
+    For Each ws In wb.Sheets
+        For col = 1 To UBound(colWidths) + 1
+            ws.Columns(col).ColumnWidth = colWidths(col - 1)
+        Next col
+    Next ws
+    
+        MsgBox "Gia tri cac cot da nhap la: " & inputValues
+End Sub
+
