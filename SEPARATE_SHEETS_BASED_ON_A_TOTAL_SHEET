@@ -1,0 +1,62 @@
+Sub SEPARATE_SHEETS_BASED_ON_A_TOTAL_SHEET()
+    Dim wsData As Worksheet
+    Dim wsNew As Worksheet
+    Dim lastRow As Long
+    Dim cell As Range
+    Dim uniqueValues As Collection
+    Dim value As Variant
+    
+    ' Nhập tên sheet chứa dữ liệu bạn muốn tách
+    Dim sheetName As String
+    sheetName = InputBox("Nhap_ten_sheet_chua_du_lieu_ban_muon_tach:")
+    
+    On Error Resume Next
+    Set wsData = ThisWorkbook.Worksheets(sheetName)
+    On Error GoTo 0
+    
+    If wsData Is Nothing Then
+        MsgBox "Khong tim thay sheet co ten " & sheetName, vbCritical
+        Exit Sub
+    End If
+    
+    ' Nhap ten cot chua du lieu ban muon tach
+    Dim columnName As String
+    columnName = InputBox("Nhap ten cot chua du lieu ban muon tach:", "Tách dữ liệu")
+    
+    On Error Resume Next
+    lastRow = wsData.Cells(wsData.Rows.Count, columnName).End(xlUp).Row
+    On Error GoTo 0
+    
+    If lastRow = 1 Then
+        MsgBox "Khong tim thay du lieu trong cot " & columnName, vbCritical
+        Exit Sub
+    End If
+    
+    ' Tao mot Collection de luu tru cac gia tri duy nhat
+    Set uniqueValues = New Collection
+    
+    ' Lap qua cac o trong cot va them cac gia tri duy nhat vao Collection
+    For Each cell In wsData.Range(columnName & "2:" & columnName & lastRow)
+        On Error Resume Next
+        uniqueValues.Add cell.Value, CStr(cell.Value)
+        On Error GoTo 0
+    Next cell
+    
+    ' Lap qua cac gia tri duy nhat trong Collection va tao cac sheet moi
+    For Each value In uniqueValues
+        ' Tao mot sheet moi
+        Set wsNew = ThisWorkbook.Worksheets.Add(After:=ThisWorkbook.Worksheets(ThisWorkbook.Worksheets.Count))
+      ' Dat ten sheet moi dua tren gia tri duy nhat
+        wsNew.Name = value
+        
+        ' Lap qua cac dong trong sheet du lieu va sao chep cac dong co gia tri tuong ung vao sheet moi
+        For Each cell In wsData.Range(columnName & "2:" & columnName & lastRow)
+            If cell.Value = value Then
+                ' Xac dinh dong cuoi cung trong sheet moi
+                lastRow = wsNew.Cells(wsNew.Rows.Count, columnName).End(xlUp).Row
+                ' Sao chep du lieu vao sheet moi
+                wsData.Rows(cell.Row).Copy wsNew.Rows(lastRow + 1)
+            End If
+        Next cell
+    Next value
+End Sub
