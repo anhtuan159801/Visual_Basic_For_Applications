@@ -1,0 +1,31 @@
+Sub TachSheet()
+    Dim ws As Worksheet
+    Dim wb As Workbook
+    Dim NewWb As Workbook
+    Dim SavePath As Variant
+    With Application.FileDialog(msoFileDialogFolderPicker)
+        .Title = "Chon_thu_muc_luu_file"
+        .Show
+        If .SelectedItems.Count > 0 Then
+            SavePath = .SelectedItems(1)
+        Else
+            Exit Sub
+        End If
+    End With
+    Application.DisplayAlerts = False
+    For Each ws In ThisWorkbook.Sheets
+        
+        Set NewWb = Workbooks.Add
+        
+        ws.Copy Before:=NewWb.Sheets(1)
+        
+        NewWb.SaveAs SavePath & "\" & ws.Name & ".xlsx"
+        
+        NewWb.Close SaveChanges:=False
+    Next ws
+    
+    Application.DisplayAlerts = True
+    
+    MsgBox "Hoan_thanh!"
+End Sub
+
